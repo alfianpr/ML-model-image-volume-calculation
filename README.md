@@ -1,5 +1,5 @@
 # Sistem perhitungan volume objek simetri pada citra menggunakan metode regresi linier
-Objek yang diamati dalam program ini adalah telur dan beras
+Objek yang diamati dalam program ini adalah telur dan beras.
 
 Credit : 
 
