@@ -1,1 +1,0 @@
-Berisi library citra telur
