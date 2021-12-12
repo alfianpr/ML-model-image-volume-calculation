@@ -1,1 +1,0 @@
-Library citra telur
