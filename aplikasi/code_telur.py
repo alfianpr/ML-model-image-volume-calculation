@@ -1,28 +1,22 @@
 import cv2
 import numpy as np
-import requests
-import imutils
-from ml_model_beras import *
+from ml_model_telur import *
 
 with open("android_camera.txt", encoding='utf8') as url:
-    url = url.readlines()[0]
+    url = str(url.readlines()[0])+"/video"
 
-url = str(url)+"/shot.jpg"
 
 # While loop to continuously fetching data from the Url
 while True:
-    img_resp = requests.get(url)
-    img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
-    img = cv2.imdecode(img_arr, -1)
-    img = imutils.resize(img, width=500, height=500)
-    cv2.imshow("Tekan ESC untuk keluar, C untuk volume", img)
+    cap = cv2.VideoCapture(url)
+    ret, img = cap.read()
+    show = cv2.resize(img, (600, 400))
+    cv2.imshow("Tekan ESC untuk keluar, tekan C dua kali untuk volume", show)
     
     # Press C for calculate the volume
     if cv2.waitKey(0) == ord('c'):
-        
-        cv2.imwrite("beras.jpg", img)
-
-        img = cv2.imread("beras.jpg", 0) # Read image
+        cv2.imwrite("telur.jpg", img)
+        img = cv2.imread("telur.jpg", 0) # Read image
 
         # Otsu's thresholding setelah Gaussian filtering
         blur = cv2.GaussianBlur(img,(5,5),0)
@@ -39,7 +33,9 @@ while True:
           jarak = jarak.readlines()[1]
         jarak = float(jarak)
         print("jarak (m):", jarak)
-        text = predict(jarak, pixel_putih)
+
+        print("Sedang memproses...")
+        text = predict(pixel_putih, jarak)
 
         print("Volumenya adalah (cm^3) :", text)
 

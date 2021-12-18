@@ -1,0 +1,1 @@
+python code_telur.py
