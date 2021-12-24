@@ -6,7 +6,7 @@ def predict (jarak, pixel):
     from sklearn.model_selection import train_test_split
     
     # read dataset
-    df = pd.read_excel('https://raw.githubusercontent.com/alfianpr/perhitungan-volume-objek-simetri/main/beras_clean.xlsx', 
+    df = pd.read_excel('/home/alfian/Project/Thesis/perhitungan-volume-objek-simetri/beras_clean.xlsx', 
             usecols=['pixel', 'volume', 'jarak'])
 
     # delete outlier
