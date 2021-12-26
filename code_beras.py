@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from ml_model_beras import *
+from ml_model_beras import predict
 
 with open("android_camera.txt", encoding='utf8') as url:
     url = str(url.readlines()[0])+"/video"
