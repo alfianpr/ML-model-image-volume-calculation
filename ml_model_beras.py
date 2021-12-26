@@ -10,7 +10,7 @@ df = pd.read_excel('beras_clean.xlsx',
 # delete outlier
 # df.drop(1, inplace=True)
 
-# Modeling ML
+# -------------------------------- Modeling ML -----------------------------
 
 #variabel x dan y.
 x = df.drop(columns='volume')

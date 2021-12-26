@@ -40,6 +40,7 @@ while True:
 
         with open("android_camera.txt", encoding='utf8') as jarak:
           jarak = jarak.readlines()[1]
+          
         jarak = float(jarak)
         print("jarak (m):", jarak)
 
