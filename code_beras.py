@@ -22,7 +22,7 @@ def open_morphology(th3):
 while True:
     cap = cv2.VideoCapture(url)
     ret, img = cap.read()
-    show = cv2.resize(img, (500, 200))
+    show = cv2.resize(img, (500, 300))
     cv2.imshow("Tekan ESC untuk keluar, tekan C dua kali untuk volume", show)
     
     # Press C for calculate the volume
@@ -45,7 +45,7 @@ while True:
         print("jarak (m):", jarak)
 
         # Menampilkan citra biner
-        biner = cv2.resize(opening, (500, 200))
+        biner = cv2.resize(opening, (500, 300))
         cv2.imshow("Citra biner", biner)
 
         print("Sedang memproses...")
