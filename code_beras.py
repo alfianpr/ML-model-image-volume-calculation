@@ -23,7 +23,8 @@ while True:
     cap = cv2.VideoCapture(url)
     ret, img = cap.read()
     show = cv2.resize(img, (500, 300))
-    cv2.imshow("Tekan ESC untuk keluar, tekan C dua kali untuk volume", show)
+    show = cv2.rotate(show, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    cv2.imshow("ESC untuk keluar, C double untuk volume", show)
     
     # Press C for calculate the volume
     if cv2.waitKey(0) == ord('c'):
@@ -40,12 +41,13 @@ while True:
 
         with open("android_camera.txt", encoding='utf8') as jarak:
           jarak = jarak.readlines()[1]
-          
+        
         jarak = float(jarak)
         print("jarak (m):", jarak)
 
         # Menampilkan citra biner
         biner = cv2.resize(opening, (500, 300))
+        biner = cv2.rotate(biner, cv2.ROTATE_90_COUNTERCLOCKWISE)
         cv2.imshow("Citra biner", biner)
 
         print("Sedang memproses...")

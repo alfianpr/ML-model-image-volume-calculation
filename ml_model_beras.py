@@ -29,4 +29,4 @@ lin_reg = LinearRegression()
 lin_reg.fit(x_train.values, y_train.values)
 
 def predict(jarak, pixel):
-        return lin_reg.predict([[jarak, pixel]])
+        return lin_reg.predict([[pixel, jarak]])
