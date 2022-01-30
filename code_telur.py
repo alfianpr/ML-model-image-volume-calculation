@@ -9,7 +9,7 @@ with open("android_camera.txt", encoding='utf8') as url:
 # Fungsi Otsu's Thresholding setelah Gaussian filtering
 def threshold(img):
     blur = cv2.GaussianBlur(img,(5,5),0)
-    ret1,th1 = cv2.threshold(img,100,255,cv2.THRESH_BINARY)
+    ret1,th1 = cv2.threshold(img,90,255,cv2.THRESH_BINARY)
     #ret1, th1 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     return th1
 
