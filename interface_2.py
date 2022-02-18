@@ -9,8 +9,10 @@ import numpy as np
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
+        # Declare global function
         global threshold_beras, treshold_telur, open_morphology
 
+        # Window setting
         self.title('volume objek simetri 1.0')
         self.geometry("700x400")
         self.columnconfigure(0, weight=1)
@@ -21,17 +23,18 @@ class App(tk.Tk):
         self.jarak_var = tk.DoubleVar()
         self.create_widgets()
 
-        #Read file android_camera
+        # Read file android_camera
         with open("android_camera.txt", encoding='utf8') as url:
             self.url = str(url.readlines()[0])+"/video"
     
-        # Fungsi Otsu's Thresholding setelah Gaussian filtering
+        # Fungsi Otsu's Thresholding after Gaussian filtering
         def threshold_beras(img):
             blur = cv2.GaussianBlur(img,(5,5),0)
             ret3, th3 = cv2.threshold(blur, 0, 255, 
                         cv2.THRESH_BINARY+cv2.THRESH_OTSU)
             return th3
-
+        
+        # Thresholding with value 90
         def threshold_telur(img):
             blur = cv2.GaussianBlur(img,(5,5),0)
             ret1,th1 = cv2.threshold(img, 90, 255,
@@ -44,10 +47,11 @@ class App(tk.Tk):
             opening = cv2.morphologyEx(th3, cv2.MORPH_OPEN, kernel)
             return opening
 
+    # Widget function
     def create_widgets(self):
         padding = {'padx': 3, 'pady': 3}
         # Button telur
-        btn_telur = ttk.Button(self, text='Telur', command=self.beras)
+        btn_telur = ttk.Button(self, text='Telur', command=self.telur)
         btn_telur.grid(column=0, row=0, **padding)
 
         # Entry
@@ -77,10 +81,10 @@ class App(tk.Tk):
         self.lbl_predict.grid(column=0, row=1, **padding)
 
     def beras(self):
-        #open camera
+        # Open camera
         cap = cv2.VideoCapture(self.url)
 
-        #RGB Picture
+        # RGB Picture
         ret, img = cap.read()
         cv2.imwrite("beras.jpg", img)
         show = cv2.resize(img, (300, 200))
@@ -91,7 +95,7 @@ class App(tk.Tk):
         self.lbl_rgb.imgtk = show
         self.lbl_rgb.configure(image=show)
 
-        #Thresh Picture
+        # Thresh Picture
         img = cv2.imread("beras.jpg", 0)
         th3 = threshold_beras(img)
         opening = open_morphology(th3)
@@ -102,12 +106,12 @@ class App(tk.Tk):
         self.lbl_thresh.imgtk = biner
         self.lbl_thresh.configure(image=biner)
 
-        #Sum Pixel
+        # Sum Pixel
         jumlah_pixel= np.sum(opening == 255)
         jumlah_pixel = np.float64(jumlah_pixel).item()
         self.pixel.set("Jumlah pixel : "+str(jumlah_pixel))
 
-        #jarak
+        # jarak
         jarak_var = self.jarak_var.get()
         float(jarak_var)
 
@@ -116,8 +120,43 @@ class App(tk.Tk):
         self.predict_result.set("Volume : "+str(predict_result))
 
     def telur(self):
-        #open camera
+        # Open camera
         cap = cv2.VideoCapture(self.url)
+
+        # RGB Picture
+        ret, img = cap.read()
+        cv2.imwrite("telur.jpg", img)
+        show = cv2.resize(img, (300, 200))
+        show = cv2.rotate(show, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
+        show = Image.fromarray(show)
+        show = ImageTk.PhotoImage(show)
+        self.lbl_rgb.imgtk = show
+        self.lbl_rgb.configure(image=show)
+
+        # Thresh Picture
+        img = cv2.imread("telur.jpg", 0)
+        th3 = threshold_telur(img)
+        opening = open_morphology(th3)
+        biner = cv2.resize(opening, (300, 200))
+        biner = cv2.rotate(biner, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        biner = Image.fromarray(biner)
+        biner = ImageTk.PhotoImage(biner)
+        self.lbl_thresh.imgtk = biner
+        self.lbl_thresh.configure(image=biner)
+
+        # Sum Pixel
+        jumlah_pixel= np.sum(opening == 255)
+        jumlah_pixel = np.float64(jumlah_pixel).item()
+        self.pixel.set("Jumlah pixel : "+str(jumlah_pixel))
+
+        # Jarak
+        jarak_var = self.jarak_var.get()
+        float(jarak_var)
+
+        # Predict
+        predict_result = ml_model_telur.predict(jarak_var, jumlah_pixel)
+        self.predict_result.set("Volume : "+str(predict_result))
 
 if __name__ == "__main__":
     app = App()
