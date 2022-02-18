@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
     
 # read dataset
-df = pd.read_excel('dataset_beras.xlsx', 
+df = pd.read_csv('dataset_beras.csv', 
         usecols=['pixel', 'volume', 'jarak'])
 
 # delete outlier
