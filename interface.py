@@ -1,90 +1,163 @@
 import tkinter as tk
+from tkinter import ttk
 from PIL import Image, ImageTk
 import cv2
-from ml_model_beras import predict
-#from ml_model_telur import predict
-#from code_beras import *
-#from code_telur import *
+import ml_model_beras
+import ml_model_telur
 import numpy as np
 
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        # Declare global function
+        global threshold_beras, threshold_telur, open_morphology
 
-# Fungsi Otsu's Thresholding setelah Gaussian filtering
-def threshold(img):
-    blur = cv2.GaussianBlur(img,(5,5),0)
-    ret3, th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-    return th3
+        # Window setting
+        self.title('volume objek simetri 1.0')
+        self.geometry("450x570")
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.pixel = tk.StringVar()
+        self.predict_result = tk.StringVar()
+        self.jarak_var = tk.DoubleVar()
+        self.create_widgets()
 
-# Fungsi open morphologi untuk menghilangkan noise
-def open_morphology(th3):
-    kernel = np.ones((5,5),np.uint8)
-    opening = cv2.morphologyEx(th3, cv2.MORPH_OPEN, kernel)
-    return opening
+        # Read file android_camera
+        with open("android_camera.txt", encoding='utf8') as url:
+            self.url = str(url.readlines()[0])+"/video"
+    
+        # Fungsi Otsu's Thresholding after Gaussian filtering
+        def threshold_beras(img):
+            blur = cv2.GaussianBlur(img,(5,5),0)
+            ret3, th3 = cv2.threshold(blur, 0, 255, 
+                        cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+            return th3
+        
+        # Thresholding with value 90
+        def threshold_telur(img):
+            blur = cv2.GaussianBlur(img,(5,5),0)
+            ret1,th1 = cv2.threshold(img, 90, 255,
+                       cv2.THRESH_BINARY)
+            return th1
 
-frame = tk.Tk()
-frame.title("volume")
-frame.geometry('900x400')
+        # Fungsi open morphologi untuk menghilangkan noise
+        def open_morphology(th3):
+            kernel = np.ones((5,5),np.uint8)
+            opening = cv2.morphologyEx(th3, cv2.MORPH_OPEN, kernel)
+            return opening
 
-with open("android_camera.txt", encoding='utf8') as url:
-    url = str(url.readlines()[0])+"/video"
+    # Widget function
+    def create_widgets(self):
+        padding = {'padx': 3, 'pady': 3}
+        # Button telur
+        btn_telur = ttk.Button(self, text='Telur', command=self.telur)
+        btn_telur.grid(column=0, row=0, **padding)
 
-def proses_beras():
-    global pixel_putih
-    #input_jarak = input_jarak.get(1.0, tk.END+"-1c")
+        # Entry
+        name_entry = ttk.Entry(self, justify='center', 
+                        width=10, textvariable=self.jarak_var)
+        name_entry.grid(column=1, row=0, **padding)
+        name_entry.focus()
 
-    cap = cv2.VideoCapture(url)
+        # Button beras
+        btn_beras = ttk.Button(self, text='Beras', command=self.beras)
+        btn_beras.grid(column=2, row=0, **padding)
 
-    ret, img = cap.read()
-    cv2.imwrite("beras.jpg", img)
-    show = cv2.resize(img, (300, 200))
-    show = cv2.rotate(show, cv2.ROTATE_90_COUNTERCLOCKWISE)
-    show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
+        # Output RGB pict
+        #self.lbl_rgb = ttk.Label(self)
+        #self.lbl_rgb.grid(column=0, row=2, **padding)
 
+        # Output Thresh pict
+        self.lbl_thresh = ttk.Label(self)
+        self.lbl_thresh.grid(column=0, row=2, columnspan=3, **padding)
 
-    #cv2.imwrite("beras.jpg", img)
-    img = cv2.imread("beras.jpg", 0) # Read image
+        # Output sum of pixel
+        self.lbl_pixel = ttk.Label(self, textvariable=self.pixel)
+        self.lbl_pixel.grid(column=2, row=1, **padding)
 
-    # Proses thresholding dan morphologi
-    th3 = threshold(img)
-    opening = open_morphology(th3)
+        # Output predict
+        self.lbl_predict = ttk.Label(self, textvariable=self.predict_result)
+        self.lbl_predict.grid(column=0, row=1, **padding)
 
-    show = Image.fromarray(show)
-    show = ImageTk.PhotoImage(show)
-    lbl_color.imgtk = show
-    lbl_color.configure(image=show)
+    def beras(self):
+        # Open camera
+        cap = cv2.VideoCapture(self.url)
 
-    biner = cv2.resize(opening, (300, 200))
-    biner = cv2.rotate(biner, cv2.ROTATE_90_COUNTERCLOCKWISE)
-    biner = Image.fromarray(biner)
-    biner = ImageTk.PhotoImage(biner)
-    lbl_thresh.imgtk = biner
-    lbl_thresh.configure(image=biner)
+        # RGB Picture
+        ret, img = cap.read()
+        cv2.imwrite("beras.jpg", img)
+        show = cv2.resize(img, (500, 400))
+        show = cv2.rotate(show, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
+        show = Image.fromarray(show)
+        show = ImageTk.PhotoImage(show)
+        #self.lbl_rgb.imgtk = show
+        #self.lbl_rgb.configure(image=show)
 
-    # Menjumlahkan pixel putih
-    jumlah_pixel= np.sum(opening == 255)
-    pixel_putih.set(jumlah_pixel)
-    #lbl_pixel.config(text=jumlah_pixel)
-    #lbl_pixel["text"] = jumlah_pixel
+        # Thresh Picture
+        img = cv2.imread("beras.jpg", 0)
+        th3 = threshold_beras(img)
+        opening = open_morphology(th3)
+        biner = cv2.resize(opening, (500, 400))
+        biner = cv2.rotate(biner, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        biner = Image.fromarray(biner)
+        biner = ImageTk.PhotoImage(biner)
+        self.lbl_thresh.imgtk = biner
+        self.lbl_thresh.configure(image=biner)
 
-pixel_putih = tk.IntVar()
+        # Sum Pixel
+        jumlah_pixel= np.sum(opening == 255)
+        jumlah_pixel = np.float64(jumlah_pixel).item()
+        self.pixel.set("Jumlah pixel : "+str(jumlah_pixel))
 
-input_jarak=tk.Text(frame, height = 2, width = 20)
-input_jarak.pack()
+        # jarak
+        jarak_var = self.jarak_var.get()
+        float(jarak_var)
 
-printButton = tk.Button(frame, text = "beras", 
-                        command = proses_beras)
-printButton.pack()
+        # predict
+        predict_result = ml_model_beras.predict(jarak_var, jumlah_pixel)
+        self.predict_result.set("Volume : "+str(predict_result))
 
-lbl_color = tk.Label(frame, text = "")
-lbl_color.pack(side="left", expand="yes", padx="10", pady="10")
+    def telur(self):
+        # Open camera
+        cap = cv2.VideoCapture(self.url)
 
-lbl_thresh = tk.Label(frame, text = "")
-lbl_thresh.pack(side="right", expand="yes", padx="10", pady="10")
+        # RGB Picture
+        ret, img = cap.read()
+        cv2.imwrite("telur.jpg", img)
+        show = cv2.resize(img, (500, 400))
+        show = cv2.rotate(show, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
+        show = Image.fromarray(show)
+        show = ImageTk.PhotoImage(show)
+        #self.lbl_rgb.imgtk = show
+        #self.lbl_rgb.configure(image=show)
 
-lbl_pixel = tk.Label(
-                    frame, 
-                    textvariable=str(pixel_putih),
-                    #text="jumlah pixel"
-)
-lbl_pixel.pack(padx="10", pady="10")
+        # Thresh Picture
+        img = cv2.imread("telur.jpg", 0)
+        th3 = threshold_telur(img)
+        opening = open_morphology(th3)
+        biner = cv2.resize(opening, (500, 400))
+        biner = cv2.rotate(biner, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        biner = Image.fromarray(biner)
+        biner = ImageTk.PhotoImage(biner)
+        self.lbl_thresh.imgtk = biner
+        self.lbl_thresh.configure(image=biner)
 
-frame.mainloop()
+        # Sum Pixel
+        jumlah_pixel= np.sum(opening == 255)
+        jumlah_pixel = np.float64(jumlah_pixel).item()
+        self.pixel.set("Jumlah pixel : "+str(jumlah_pixel))
+
+        # Jarak
+        jarak_var = self.jarak_var.get()
+        float(jarak_var)
+
+        # Predict
+        predict_result = ml_model_telur.predict(jarak_var, jumlah_pixel)
+        self.predict_result.set("Volume : "+str(predict_result))
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
