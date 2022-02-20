@@ -10,11 +10,11 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         # Declare global function
-        global threshold_beras, treshold_telur, open_morphology
+        global threshold_beras, threshold_telur, open_morphology
 
         # Window setting
         self.title('volume objek simetri 1.0')
-        self.geometry("700x400")
+        self.geometry("450x570")
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=1)
@@ -65,12 +65,12 @@ class App(tk.Tk):
         btn_beras.grid(column=2, row=0, **padding)
 
         # Output RGB pict
-        self.lbl_rgb = ttk.Label(self)
-        self.lbl_rgb.grid(column=0, row=2, **padding)
+        #self.lbl_rgb = ttk.Label(self)
+        #self.lbl_rgb.grid(column=0, row=2, **padding)
 
         # Output Thresh pict
         self.lbl_thresh = ttk.Label(self)
-        self.lbl_thresh.grid(column=2, row=2, **padding)
+        self.lbl_thresh.grid(column=0, row=2, columnspan=3, **padding)
 
         # Output sum of pixel
         self.lbl_pixel = ttk.Label(self, textvariable=self.pixel)
@@ -87,19 +87,19 @@ class App(tk.Tk):
         # RGB Picture
         ret, img = cap.read()
         cv2.imwrite("beras.jpg", img)
-        show = cv2.resize(img, (300, 200))
+        show = cv2.resize(img, (500, 400))
         show = cv2.rotate(show, cv2.ROTATE_90_COUNTERCLOCKWISE)
         show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
         show = Image.fromarray(show)
         show = ImageTk.PhotoImage(show)
-        self.lbl_rgb.imgtk = show
-        self.lbl_rgb.configure(image=show)
+        #self.lbl_rgb.imgtk = show
+        #self.lbl_rgb.configure(image=show)
 
         # Thresh Picture
         img = cv2.imread("beras.jpg", 0)
         th3 = threshold_beras(img)
         opening = open_morphology(th3)
-        biner = cv2.resize(opening, (300, 200))
+        biner = cv2.resize(opening, (500, 400))
         biner = cv2.rotate(biner, cv2.ROTATE_90_COUNTERCLOCKWISE)
         biner = Image.fromarray(biner)
         biner = ImageTk.PhotoImage(biner)
@@ -126,19 +126,19 @@ class App(tk.Tk):
         # RGB Picture
         ret, img = cap.read()
         cv2.imwrite("telur.jpg", img)
-        show = cv2.resize(img, (300, 200))
+        show = cv2.resize(img, (500, 400))
         show = cv2.rotate(show, cv2.ROTATE_90_COUNTERCLOCKWISE)
         show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
         show = Image.fromarray(show)
         show = ImageTk.PhotoImage(show)
-        self.lbl_rgb.imgtk = show
-        self.lbl_rgb.configure(image=show)
+        #self.lbl_rgb.imgtk = show
+        #self.lbl_rgb.configure(image=show)
 
         # Thresh Picture
         img = cv2.imread("telur.jpg", 0)
         th3 = threshold_telur(img)
         opening = open_morphology(th3)
-        biner = cv2.resize(opening, (300, 200))
+        biner = cv2.resize(opening, (500, 400))
         biner = cv2.rotate(biner, cv2.ROTATE_90_COUNTERCLOCKWISE)
         biner = Image.fromarray(biner)
         biner = ImageTk.PhotoImage(biner)

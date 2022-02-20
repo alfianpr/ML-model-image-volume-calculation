@@ -1,7 +1,1 @@
-http://192.168.0.100:8080
-0.309
-
-Readme:
-
-Baris pertama diinput alamat aplikasi IP camera yang sudah terinstall di android.
-Baris kedua berisi jarak dari kamera ke objek.
+http://192.168.0.105:8080
