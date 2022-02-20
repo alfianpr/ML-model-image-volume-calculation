@@ -41,7 +41,7 @@ class App(tk.Tk):
                        cv2.THRESH_BINARY)
             return th1
 
-        # Fungsi open morphologi untuk menghilangkan noise
+        # Open morphology function
         def open_morphology(th3):
             kernel = np.ones((5,5),np.uint8)
             opening = cv2.morphologyEx(th3, cv2.MORPH_OPEN, kernel)
@@ -117,7 +117,8 @@ class App(tk.Tk):
 
         # predict
         predict_result = ml_model_beras.predict(jarak_var, jumlah_pixel)
-        self.predict_result.set("Volume : "+str(predict_result))
+        self.predict_result.set("Volume (cm^3) : "+
+                            str(np.round(predict_result, decimals=2)))
 
     def telur(self):
         # Open camera
@@ -156,7 +157,8 @@ class App(tk.Tk):
 
         # Predict
         predict_result = ml_model_telur.predict(jarak_var, jumlah_pixel)
-        self.predict_result.set("Volume : "+str(predict_result))
+        self.predict_result.set("Volume (cm^3) : "+
+                            str(np.round(predict_result, decimals=2)))
 
 if __name__ == "__main__":
     app = App()
